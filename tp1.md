@@ -89,8 +89,59 @@ azureuser@totototo:~$
 
 # II. Spawn des VMs
 
+🌞 Connectez-vous en SSH à la VM pour preuve
+
 ```
 PS C:\Users\leobe\.ssh> ssh custom@4.211.110.173
 [...]
 custom@custom:~$
 ```
+
+```
+PS C:\Users\leobe> az vm create `
+>>    --resource-group custom_group `
+>>    --name cloud.tp1 `
+>>    --image Ubuntu2404 `
+>>    --size Standard_B1s `
+>>    --admin-username azureuser `
+>>    --ssh-key-values "C:\Users\leobe\.ssh\cloud_t.pub"`
+>>    --public-ip-sku Standard `
+>>    --location spaincentral `
+>>    --output table
+The default value of '--size' will be changed to 'Standard_D2s_v5' from 'Standard_DS1_v2' in a future release.
+ResourceGroup    PowerState    PublicIpAddress    Fqdns    PrivateIpAddress    MacAddress         Location
+---------------  ------------  -----------------  -------  ------------------  -----------------  ------------
+custom_group     VM running    158.158.50.205              10.0.0.4            7C-ED-8D-16-3D-05  spaincentral
+```
+
+🌞 Assurez-vous que vous pouvez vous connecter à la VM en SSH sur son IP publique
+
+```
+PS C:\Users\leobe> ssh azureuser@158.158.50.205
+Welcome to Ubuntu 24.04.3 LTS (GNU/Linux 6.14.0-1012-azure x86_64)
+[...]
+azureuser@cloud:~$
+```
+
+🌞 Une fois connecté, prouvez la présence du service walinuxagent.service, du service cloud-init.service
+
+```
+zureuser@cloud:~$ sudo systemctl status walinuxagent
+● walinuxagent.service - Azure Linux Agent
+     Loaded: loaded (/usr/lib/systemd/system/walinuxagent.service; enab>
+    Drop-In: /run/systemd/system.control/walinuxagent.service.d
+             └─50-CPUAccounting.conf, 50-MemoryAccounting.conf
+     Active: active (running) since Wed 2025-10-29 11:44:57 UTC; 7min a>
+
+#on voit que c'est activer 
+```
+
+```
+azureuser@cloud:~$ sudo systemctl status cloud-init
+● cloud-init.service - Cloud-init: Network Stage
+     Loaded: loaded (/usr/lib/systemd/system/cloud-init.service; enable>
+     Active: active (exited) since Wed 2025-10-29 11:44:56 UTC; 10min a>
+   Main PID: 706 (code=exited, status=0/SUCCESS)
+        CPU: 1.435s
+```
+
