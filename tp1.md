@@ -145,3 +145,80 @@ azureuser@cloud:~$ sudo systemctl status cloud-init
         CPU: 1.435s
 ```
 
+🌞 Créez une deuxième VM : azure2.tp1
+
+```
+PS C:\Users\leobe> az network nic create `
+>>   --resource-group custom_group `
+>>   --name azure2NIC `
+>>   --vnet-name custom_group-vnet `
+>>   --subnet default `
+>>   --location spaincentral `
+>>   --output table
+
+PS C:\Users\leobe> az vm create `
+>>   --resource-group custom_group `
+>>   --name azure2.tp1 `
+>>   --nics azure2NIC `
+>>   --image Ubuntu2404 `
+>>   --size Standard_B1s `
+>>   --admin-username azureuser `
+>>   --ssh-key-values "C:\Users\leobe\.ssh\cloud_t.pub" `
+>>   --location spaincentral `
+>>   --output table
+The default value of '--size' will be changed to 'Standard_D2s_v5' from 'Standard_DS1_v2' in a future release.
+ResourceGroup    PowerState    PublicIpAddress    Fqdns    PrivateIpAddress    MacAddress         Location
+---------------  ------------  -----------------  -------  ------------------  -----------------  ------------
+custom_group     VM running
+```
+
+🌞 Affichez des infos au sujet de vos deux VMs
+
+```
+PS C:\Users\leobe> az vm list-ip-addresses -g custom_group -o table
+VirtualMachine    PublicIPAddresses    PrivateIPAddresses
+----------------  -------------------  --------------------
+custom            4.211.110.173        172.17.0.4
+azure2.tp1                             10.0.0.4
+cloud.tp1         158.158.50.205       10.0.0.4
+```
+
+🌞 Configuration SSH client pour les deux machines
+
+```
+notepad $env:USERPROFILE\.ssh\config
+```
+
+```
+Host az1
+    HostName 158.158.50.205
+    User azureuser
+    IdentityFile C:\Users\leobe\.ssh\cloud_t
+    IdentitiesOnly yes
+
+Host az2
+    HostName 10.0.0.5
+    User azureuser
+    IdentityFile C:\Users\leobe\.ssh\cloud_t
+    ProxyJump az1
+    IdentitiesOnly yes
+```
+
+```
+PS C:\Users\leobe> ssh az1
+Welcome to Ubuntu 24.04.3 LTS (GNU/Linux 6.14.0-1012-azure x86_64)
+[...]
+azureuser@cloud:~$
+```
+
+```
+azureuser@cloud:~$ exit
+logout
+Connection to 158.158.50.205 closed.
+PS C:\Users\leobe> ssh az2
+The authenticity of host '10.0.0.4 (<no hostip for proxy command>)' can't be established.
+[...]
+Last login: Thu Oct 30 08:08:26 2025 from 159.117.224.24
+azureuser@cloud:~$
+```
+
