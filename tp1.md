@@ -343,11 +343,16 @@ app.py  docker-compose.yml  requirements.txt  templates
 
 ```
 azureuser@cloud:/opt/meow$ cd /opt/meow/docs/tp/1/app
-azureuser@cloud:/opt/meow/docs/tp/1/app$ python -m venv .
-Command 'python' not found, did you mean:
-  command 'python3' from deb python3
-  command 'python' from deb python-is-python3
 azureuser@cloud:/opt/meow/docs/tp/1/app$ python3 -m venv .
+The virtual environment was not created successfully because ensurepip is not
+available.  On Debian/Ubuntu systems, you need to install the python3-venv
+package using the following command.
+
+    apt install python3.12-venv
+
+You may need to use sudo with that command.  After installing the python3-venv
+package, recreate your virtual environment.
+
 azureuser@cloud:/opt/meow/docs/tp/1/app$ ./bin/pip install -r requirements.txt
 Collecting Flask (from -r requirements.txt (line 1))
   Using cached flask-3.1.2-py3-none-any.whl.metadata (3.2 kB)
